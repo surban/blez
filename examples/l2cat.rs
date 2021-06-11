@@ -56,19 +56,24 @@ struct ConnectOpts {
     /// Use together with --pty when serving.
     #[clap(long, short)]
     raw: bool,
+    /// Use classic Bluetooth.
+    #[clap(long, short = 'c')]
+    br_edr: bool,
     /// Public Bluetooth address of target device.
     address: Address,
     /// Target PSM.
-    psm: u8,
+    psm: u16,
 }
 
 impl ConnectOpts {
     pub async fn perform(self) -> Result<()> {
+        let address_type = if self.br_edr { AddressType::BrEdr } else { AddressType::Public };
+
         let socket = Socket::new_stream()?;
-        let local_sa = SocketAddr::new(self.bind.unwrap_or(Address::any()), AddressType::Public, 0);
+        let local_sa = SocketAddr::new(self.bind.unwrap_or(Address::any()), address_type, 0);
         socket.bind(local_sa)?;
 
-        let peer_sa = SocketAddr::new(self.address, AddressType::Public, self.psm);
+        let peer_sa = SocketAddr::new(self.address, address_type, self.psm);
         let stream = socket.connect(peer_sa).await?;
 
         let is_tty = std::io::stdin().is_tty();
@@ -103,17 +108,22 @@ struct ListenOpts {
     /// Do not send LE advertisement packets.
     #[clap(long, short)]
     no_advertise: bool,
+    /// Use classic Bluetooth.
+    #[clap(long, short = 'c')]
+    br_edr: bool,
     /// PSM to listen on.
     /// Specify 0 to auto allocate an available PSM.
     /// A value below 128 is priviledged.
-    psm: u8,
+    psm: u16,
 }
 
 impl ListenOpts {
     pub async fn perform(self) -> Result<()> {
         let _adv = if !self.no_advertise { Some(advertise().await?) } else { None };
 
-        let local_sa = SocketAddr::new(self.bind.unwrap_or(Address::any()), AddressType::Public, self.psm);
+        let address_type = if self.br_edr { AddressType::BrEdr } else { AddressType::Public };
+
+        let local_sa = SocketAddr::new(self.bind.unwrap_or(Address::any()), address_type, self.psm);
         let listen = StreamListener::bind(local_sa).await?;
         let local_sa = listen.as_ref().local_addr()?;
         if self.verbose && self.psm == 0 {
@@ -161,10 +171,13 @@ struct ServeOpts {
     /// Use together with --raw when connecting.
     #[clap(long, short)]
     pty: bool,
+    /// Use classic Bluetooth.
+    #[clap(long, short = 'c')]
+    br_edr: bool,
     /// PSM to listen on.
     /// Specify 0 to auto allocate an available PSM.
     /// A value below 128 is priviledged.
-    psm: u8,
+    psm: u16,
     /// Program to execute once connection is established.
     command: OsString,
     /// Arguments to program.
@@ -177,7 +190,9 @@ impl ServeOpts {
 
         let _adv = if !self.no_advertise { Some(advertise().await?) } else { None };
 
-        let local_sa = SocketAddr::new(self.bind.unwrap_or(Address::any()), AddressType::Public, self.psm);
+        let address_type = if self.br_edr { AddressType::BrEdr } else { AddressType::Public };
+
+        let local_sa = SocketAddr::new(self.bind.unwrap_or(Address::any()), address_type, self.psm);
         let listen = StreamListener::bind(local_sa).await?;
         let local_sa = listen.as_ref().local_addr()?;
         if !self.verbose && self.psm == 0 {

@@ -105,6 +105,7 @@ pub struct SocketAddr {
     /// `CAP_NET_BIND_SERVICE` capability.
     ///
     /// Set to 0 for listening to assign an available PSM.
+    pub psm: u16,
     /// Connection identifier (CID).
     ///
     /// Should be set to 0.
@@ -113,6 +114,7 @@ pub struct SocketAddr {
 
 impl SocketAddr {
     /// Creates a new L2CAP socket address.
+    pub const fn new(addr: Address, addr_type: AddressType, psm: u16) -> Self {
         Self { addr, addr_type, psm, cid: 0 }
     }
 
@@ -126,6 +128,7 @@ impl From<SocketAddr> for sockaddr_l2 {
     fn from(sa: SocketAddr) -> Self {
         sockaddr_l2 {
             l2_family: AF_BLUETOOTH as _,
+            l2_psm: sa.psm.to_le(),
             l2_cid: sa.cid.to_le(),
             l2_bdaddr: sa.addr.to_bdaddr(),
             l2_bdaddr_type: sa.addr_type as _,
@@ -143,6 +146,7 @@ impl TryFrom<sockaddr_l2> for SocketAddr {
             addr: Address::from_bdaddr(saddr.l2_bdaddr),
             addr_type: AddressType::from_u8(saddr.l2_bdaddr_type)
                 .ok_or(Error::new(ErrorKind::InvalidInput, "invalid sockaddr_l2::l2_bdaddr_type"))?,
+            psm: u16::from_le(saddr.l2_psm),
             cid: u16::from_le(saddr.l2_cid),
         })
     }

@@ -93,6 +93,7 @@ pub(crate) const ERR_PREFIX: &str = "org.bluez.Error.";
 pub(crate) const TIMEOUT: Duration = Duration::from_secs(120);
 
 // Redefine here to avoid dependency on libbluetooth for AddressType.
+pub(crate) const BDADDR_BREDR: i32 = 0x00;
 pub(crate) const BDADDR_LE_PUBLIC: i32 = 0x01;
 pub(crate) const BDADDR_LE_RANDOM: i32 = 0x02;
 
@@ -695,6 +696,9 @@ impl From<Address> for [u8; 6] {
 /// Bluetooth device address type.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Display, EnumString, FromPrimitive)]
 pub enum AddressType {
+    /// Classic Bluetooth.
+    #[strum(serialize = "br/edr")]
+    BrEdr = BDADDR_BREDR as _,
     /// Public address.
     #[strum(serialize = "public")]
     Public = BDADDR_LE_PUBLIC as _,
