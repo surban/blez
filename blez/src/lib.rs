@@ -2,6 +2,16 @@
 
 //! # BLEZ - Asynchronous Bluetooth Low Energy on Linux
 //!
+//! ## Renamed to BlueR
+//!
+//! BLEZ has been renamed to [BlueR](https://crates.io/crates/bluer) and is now the official Rust interface to BlueZ.
+//!
+//! Development will continue in the [BlueZ organization repository](https://github.com/bluez/bluer).
+//!
+//! Please update your links and crate references.
+//!
+//! ---
+//!
 //! This library provides an asynchronous, fully featured interface to the [Bluetooth Low Energy (BLE)](https://en.wikipedia.org/wiki/Bluetooth_Low_Energy)
 //! APIs of the [official Linux Bluetooth protocol stack (BlueZ)](http://www.bluez.org/).
 //! Both publishing local and consuming remote [GATT services](https://www.oreilly.com/library/view/getting-started-with/9781491900550/ch04.html) using *idiomatic* Rust code is supported.

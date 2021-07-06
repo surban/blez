@@ -4,6 +4,16 @@ BLEZ tools -- swiss army knife for GATT services and L2CAP sockets on Linux
 [![crates.io page](https://img.shields.io/crates/v/blez-tools)](https://crates.io/crates/blez-tools)
 [![BSD-2-Clause license](https://img.shields.io/crates/l/blez-tools)](https://github.com/surban/blez/blob/master/LICENSE)
 
+## Renamed to BlueR
+
+blez-tools has been renamed to [bluer-tools](https://crates.io/crates/bluer-tools).
+
+Development will continue in the [BlueZ organization repository](https://github.com/bluez/bluer).
+
+Please update your links and crate references.
+
+---
+
 This crate provides tools for [Bluetooth Low Energy (BLE)](https://en.wikipedia.org/wiki/Bluetooth_Low_Energy) on Linux,
 building on the functionality of the [BLEZ library](https://crates.io/crates/blez).
 
